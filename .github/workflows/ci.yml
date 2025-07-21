@@ -152,7 +152,7 @@ jobs:
 
   release:
     needs: [calculate_new_version, build_android, build_ios, test]
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
