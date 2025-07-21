@@ -1,6 +1,5 @@
 This is a Kotlin Multiplatform project targeting Android, iOS.
 
-[![](https://jitpack.io/v/dennismozart1994/HeapK.svg)](https://jitpack.io/#dennismozart1994/HeapK)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dennismozart1994_HeapK&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dennismozart1994_HeapK)
 
 **Heap** does not provide a native KMP library, but they were kind enough to [answer me on how to do it](https://github.com/heap/heap-ios-autocapture-sdk/issues/4). Therefore, this is a KMP library to interact with  Heap.io in a type-safe and consistent way with KMP (Android & iOS). This does not support Web since Heap does not (at least from my knowledge) provide a npm package to install and use with Js.
@@ -17,23 +16,96 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
 
 ## Platforms
 
-| Platform | Target                                         |
-|----------|------------------------------------------------|
-| Android  | `androidTarget()`                              |
+| Platform | Target                                          |
+|----------|-------------------------------------------------|
+| Android  | `androidTarget()`                               |
 | iOS      | `iosArm64()`, `iosX64()`, `iosSimulatorArm64()` |
 
 ---
 
-## Installation
+## Publishing
 
-### iOS via Swift Package Manager
+This library is published to:
+
+- **Android/KMP:** jitpack.io [![](https://jitpack.io/v/dennismozart1994/HeapK.svg)](https://jitpack.io/#dennismozart1994/HeapK)
+- **iOS:** GitHub SPM (package url: `https://github.com/dennismozart1994/HeapK`)
+
+### Installation
+
+#### iOS via Swift Package Manager
 
 HeapK is published as a Swift Package. Add the following to your `Package.swift` or use Xcode:
 
 1. Then in your project go to File > Add Package Dependency > And search for `https://github.com/dennismozart1994/HeapK`
 2. Select the version > Download and install the dependency.
 
-### Gradle (Android)
+##### Usage example
+
+```swift
+import HeapK
+
+ // Example, swap with real data
+let heapKConfig = HeapKConfig(
+    projectId = HEAP_PROJECT_ID, // Your Heap project Id goes here
+    shouldDisableTextCapture = true,
+    shouldDisableAccessibilityLabelCapture = true,
+    shouldDisableAdvertiserIdCapture = true
+)
+let heapK = HeapKAnalytics()
+
+heapK.initialize(config: heapKConfig)
+let nsDictionary: NSDictionary = ["test_message": "Hey I'm a KMP log on iOS"]
+heapK.track(action: "test_kmp_ios") // track action without properties
+
+// Convert NSDictionary to Swift Dictionary
+if let swiftDictionary = nsDictionary as? [AnyHashable: Any] {
+    heapK.track(action: "test_kmp_ios", withProperties: swiftDictionary) // track action with extra properties
+} else {
+    print("Failed to convert NSDictionary to [AnyHashable: Any]")
+}
+```
+
+#### Gradle (Android)
+
+Add the Heap dependency to your `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation("com.github.dennismozart1994.HeapK:shared-android:<version>")
+}
+```
+
+> Replace `<version>` with the desired version. (latest recommended: [![](https://jitpack.io/v/dennismozart1994/HeapK.svg)](https://jitpack.io/#dennismozart1994/HeapK) )
+
+##### Usage example
+
+```kotlin
+import com.denniverse.heapk.AppContext
+import com.denniverse.heapk.HeapKAnalytics
+import com.denniverse.heapk.HeapKConfig
+
+// on Android the Context is REQUIRED to initialize Heap
+val heapKContext = AppContext
+heapKContext.set(applicationContext)
+
+// Example, swap with real data
+val heapKConfig = HeapKConfig(
+        projectId = HEAP_PROJECT_ID, // Your Heap project Id goes here
+        shouldDisableTextCapture = true,
+        shouldDisableAccessibilityLabelCapture = true,
+        shouldDisableAdvertiserIdCapture = true
+    )
+
+val heapK = HeapKAnalytics()
+// Provide the Android context to HeapAnalytics BEFORE calling initialize() on Android
+heapK.setContext(heapContext)
+
+heapK.initialize(config = heapKConfig)
+heapK.track("test_kmp") // track action without properties
+heapK.track("test_kmp", "test_message" to "Hey I'm a KMP log on Android") // track action with extra properties
+```
+
+#### Gradle (Kotlin Multiplatform)
 
 Add the Heap dependency to your `build.gradle.kts`:
 
@@ -42,33 +114,18 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.denniverse.heapk:shared-android:<version>")
+                implementation("com.github.dennismozart1994.HeapK:shared:<version>")
             }
         }
     }
 }
 ```
 
-### Gradle (Kotlin Multiplatform)
+> Replace `<version>` with the desired version. (latest recommended: [![](https://jitpack.io/v/dennismozart1994/HeapK.svg)](https://jitpack.io/#dennismozart1994/HeapK) )
 
-Add the Heap dependency to your `build.gradle.kts`:
+---
 
-```kotlin
-kotlin {
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation("com.denniverse.heapk:shared:<version>")
-            }
-        }
-    }
-}
-```
-
-> Replace `<library-name>` with the library package name of your new shared library dependent of Heap.
-> Replace `<version>` with the latest published version.
-
-### 💻 Build and Test Commands
+## 💻 Build and Test Commands (locally)
 
 Getting your project up and running is simple! Here are the commands you need to build and test your
 repository:
@@ -104,73 +161,6 @@ repository:
    ```bash
    ./gradlew iosSimulatorArm64Test
    ```
-
-## Usage
-
-### Basic Example
-
-#### iOS
-
-```swift
-import HeapK
-
- // Example, swap with real data
-let heapKConfig = HeapKConfig(
-    projectId = HEAP_PROJECT_ID, // Your Heap project Id goes here
-    shouldDisableTextCapture = true,
-    shouldDisableAccessibilityLabelCapture = true,
-    shouldDisableAdvertiserIdCapture = true
-)
-let heapK = HeapKAnalytics()
-
-heapK.initialize(config: heapKConfig)
-let nsDictionary: NSDictionary = ["test_message": "Hey I'm a KMP log on iOS"]
-heapK.track(action: "test_kmp_ios") // track action without properties
-
-// Convert NSDictionary to Swift Dictionary
-if let swiftDictionary = nsDictionary as? [AnyHashable: Any] {
-    heapK.track(action: "test_kmp_ios", withProperties: swiftDictionary) // track action with extra properties
-} else {
-    print("Failed to convert NSDictionary to [AnyHashable: Any]")
-}
-```
-
-#### Android / Other KMP modules
-
-```kotlin
-import com.denniverse.heapk.AppContext
-import com.denniverse.heapk.HeapKAnalytics
-import com.denniverse.heapk.HeapKConfig
-
-// on Android the Context is REQUIRED to initialize Heap
-val heapKContext = AppContext
-heapKContext.set(applicationContext)
-
-// Example, swap with real data
-val heapKConfig = HeapKConfig(
-        projectId = HEAP_PROJECT_ID, // Your Heap project Id goes here
-        shouldDisableTextCapture = true,
-        shouldDisableAccessibilityLabelCapture = true,
-        shouldDisableAdvertiserIdCapture = true
-    )
-
-val heapK = HeapKAnalytics()
-// Pass the new context to HeapAnalytics BEFORE calling initialize() on Android
-heapK.setContext(heapContext)
-
-heapK.initialize(config = heapKConfig)
-heapK.track("test_kmp") // track action without properties
-heapK.track("test_kmp", "test_message" to "Hey I'm a KMP log on Android") // track action with extra properties
-```
-
----
-
-## Publishing
-
-This library is published to:
-
-- **Android/KMP:** jitpack.io
-- **iOS:** GitHub SPM
 
 ---
 
