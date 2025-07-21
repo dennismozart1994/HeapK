@@ -1,0 +1,256 @@
+name: CI Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump type: patch, minor, major'
+        required: false
+        default: 'patch'
+
+jobs:
+  calculate_new_version:
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.bump_version.outputs.new_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Calculate new version
+        id: bump_version
+        run: |
+          file="gradle/libs.versions.toml"
+          current=$(grep '^library-version' $file | awk -F'=' '{print $2}' | tr -d ' "')
+          IFS='.' read -r major minor patch <<< "$current"
+          bump="${{ github.event.inputs.bump }}"
+          if [ "$bump" = "minor" ]; then
+            minor=$((minor + 1))
+            patch=0
+          elif [ "$bump" = "major" ]; then
+            major=$((major + 1))
+            minor=0
+            patch=0
+          else
+            patch=$((patch + 1))
+          fi
+          new_version="$major.$minor.$patch"
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+ 
+  build_android:
+    needs: [calculate_new_version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Apply bumped version locally
+        run: |
+          sed -i'' "s/library-version = \".*\"/library-version = \"${{ needs.calculate_new_version.outputs.new_version }}\"/" gradle/libs.versions.toml
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Android & KMP
+        run: |
+          git pull origin HEAD:main
+          ./gradlew :shared:assemble
+          ./gradlew publishToMavenLocal
+
+      - name: Zip Android .aar artifact from m2 repository
+        run: |
+          AAR_PATH=$(find ~/.m2/repository -name "shared-android*.aar" | tail -n 1)
+          zip -j shared/build/libs/HeapK-android.aar.zip "$AAR_PATH"
+
+      - name: Zip KMP .aar artifact from m2 repository
+        run: |
+          KMP_AAR_PATH=$(find ~/.m2/repository -name "shared*.aar" | grep -v shared-android | tail -n 1)
+          zip -j shared/build/libs/HeapK-kmp.aar.zip "$KMP_AAR_PATH"
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-artifacts
+          path: |
+            shared/build/libs/HeapK-android.aar.zip
+            shared/build/libs/HeapK-kmp.aar.zip
+  
+  build_ios:
+    needs: [calculate_new_version]
+    runs-on: macos-15
+    outputs:
+      checksum: ${{ steps.checksum.outputs.checksum }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Apply bumped version locally
+        run: |
+          sed -i '' "s/library-version = \".*\"/library-version = \"${{ needs.calculate_new_version.outputs.new_version }}\"/" gradle/libs.versions.toml
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build iOS SPM
+        run: |
+          git pull origin HEAD:main
+          cp Package.local.swift Package.swift
+          ./gradlew :shared:assembleHeapKReleaseXCFramework
+          xcodebuild build -scheme HeapK -configuration "Debug" -destination generic/platform=iOS -verbose SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+      - name: Zip HeapK.xcframework
+        run: |
+          cd shared/build/XCFrameworks/release
+          zip -r HeapK.xcframework.zip HeapK.xcframework
+
+      - name: Compute checksum
+        id: checksum
+        run: |
+          CHK=$(swift package compute-checksum shared/build/XCFrameworks/release/HeapK.xcframework.zip)
+          echo "checksum=$CHK" >> "$GITHUB_OUTPUT"
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-artifact
+          path: shared/build/XCFrameworks/release/HeapK.xcframework.zip
+
+  test:
+    needs: [calculate_new_version, build_android, build_ios]
+    runs-on: macos-15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Run tests
+        run: |
+          ./gradlew koverAggregateReport
+          chmod +x ./scripts/github/sonarqube_scan.sh
+          ./scripts/github/sonarqube_scan.sh
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORG: ${{ secrets.SONAR_ORG }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+
+  release:
+    needs: [calculate_new_version, build_android, build_ios, test]
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Apply version to files
+        run: |
+          version=${{ needs.calculate_new_version.outputs.new_version }}
+          sed -i'' "s/library-version = \".*\"/library-version = \"$version\"/" gradle/libs.versions.toml
+          cp Package.release.swift Package.swift
+          sed -i'' -E "s|url: \".*\"|url: \"https://github.com/dennismozart1994/HeapK/releases/download/$version/HeapK.xcframework.zip\"|" Package.swift
+          sed -i'' -E "s|checksum: \".*\"|checksum: \"${{ needs.build_ios.outputs.checksum }}\"|" Package.swift
+
+      - name: Download Android artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-artifacts
+          path: release-artifacts
+
+      - name: Download iOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-artifact
+          path: release-artifacts
+
+      - name: List downloaded artifacts
+        run: find release-artifacts
+
+      - name: Validate artifact presence
+        run: |
+          for f in \
+            HeapK.xcframework.zip \
+            HeapK-android.aar.zip \
+            HeapK-kmp.aar.zip; do
+            [ -f "release-artifacts/$f" ] || { echo "❌ Missing: $f"; exit 1; }
+          done
+      
+      - name: Commit and push version bump + Package.swift
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git pull origin main
+          git add gradle/libs.versions.toml
+          git add Package.swift
+          git commit -m "Finalize release v${{ needs.calculate_new_version.outputs.new_version }}"
+          git push origin HEAD:main
+
+      - name: Create tag
+        id: release_tag
+        run: |
+          git pull origin HEAD:main
+          version=${{ needs.calculate_new_version.outputs.new_version }}
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag $version
+          git push origin $version
+          echo "new_version=$version" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          set -e
+
+          # Get latest tag, or leave empty if none
+          last_tag=$(git tag --sort=-creatordate | head -n 1)
+
+          if [ -z "$last_tag" ]; then
+            echo "No previous tag found. Generating full changelog."
+            changelog=$(git log --pretty=format:"* %s")
+          else
+            echo "Last tag found: $last_tag. Generating changelog since then."
+            changelog=$(git log "$last_tag"..HEAD --pretty=format:"* %s")
+          fi
+
+          # Save changelog to file for artifacts if needed
+          echo "$changelog" > CHANGELOG.md
+
+          # Properly output multiline value to GitHub Actions
+          {
+            echo "changelog<<EOF"
+            echo "$changelog"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_tag.outputs.new_version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          files: |
+            release-artifacts/HeapK.xcframework.zip
+            release-artifacts/HeapK-android.aar.zip
+            release-artifacts/HeapK-kmp.aar.zip
+            CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Trigger JitPack build
+        run: |
+          curl -X POST "https://jitpack.io/api/builds" \
+            -d "repo=github.com/dennismozart1994/HeapK&tag=${{ steps.release_tag.outputs.new_version }}"

@@ -1,0 +1,52 @@
+[versions]
+agp = "8.11.1"
+androidx-test-core = "1.6.1"
+heap-android-core = "0.8.1"
+heap-android-autocapture-view = "0.8.3"
+compose-multiplatform = "1.8.2"
+junit = "4.13.2"
+kotlin = "2.2.0"
+kotlinx-coroutines-core = "1.10.2"
+kotlin-serialization = "1.9.0"
+kover = "0.9.1"
+kmm-bridge = "1.2.1"
+kermit = "2.0.6"
+library-group = "com.denniverse.heapk"
+library-version = "0.0.0"
+mokkery = "2.9.0"
+robolectric = "4.15.1"
+skie = "0.10.4"
+heap-android-plugin = "1.1.0"
+sonarqube = "6.2.0.5505"
+
+[libraries]
+androidx-test-core = { module = "androidx.test:core-ktx", version.ref = "androidx-test-core" }
+heap-android-core = { module = "io.heap.core:heap-android-core", version.ref = "heap-android-core" }
+heap-autocapture-view = { module = "io.heap.autocapture:heap-autocapture-view", version.ref = "heap-android-autocapture-view" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotlin-test-annotations-common = { group = "org.jetbrains.kotlin", name = "kotlin-test-annotations-common", version.ref = "kotlin" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-core" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-common", version.ref = "kotlin" }
+kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
+kermit-test = { group = "co.touchlab", name = "kermit-test", version.ref = "kermit" }
+junit = { module = "junit:junit", version.ref = "junit" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+skie-configuration-annotations = { group = "co.touchlab.skie", name = "configuration-annotations", version.ref = "skie" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+heap-android = { id = "io.heap.gradle", version.ref = "heap-android-plugin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+kmm-bridge = { id = "co.touchlab.kmmbridge.github", version.ref = "kmm-bridge" }
+maven-publish = { id = "maven-publish" }
+mokkery = { id = "dev.mokkery", version.ref = "mokkery" }
+skie = { id = "co.touchlab.skie", version.ref = "skie" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
