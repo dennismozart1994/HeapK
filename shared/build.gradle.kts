@@ -1,8 +1,11 @@
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import java.net.URI
+import java.net.URL
 
 plugins {
     alias(libs.plugins.android.library)

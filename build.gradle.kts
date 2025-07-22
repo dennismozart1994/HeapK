@@ -1,3 +1,9 @@
+import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.tasks.DokkaBaseTask
+import java.net.URI
+
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
@@ -6,6 +12,7 @@ plugins {
     alias(libs.plugins.cocoapods) apply false
     alias(libs.plugins.compose.multiplatform) apply false
     alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.dokka) apply true
     alias(libs.plugins.heap.android).apply(false)
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kover) apply false
