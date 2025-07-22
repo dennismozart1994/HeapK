@@ -81,11 +81,11 @@ Add the Heap dependency to your `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.dennismozart1994.HeapK:shared-android:<version>")
+    implementation("com.github.dennismozart1994.HeapK:shared-android:0.0.2")
 }
 ```
 
-> Replace `<version>` with the desired version. (latest recommended: [![](https://jitpack.io/v/dennismozart1994/HeapK.svg)](https://jitpack.io/#dennismozart1994/HeapK) )
+> Replace `0.0.2` with the desired version. (latest recommended: [![](https://jitpack.io/v/dennismozart1994/HeapK.svg)](https://jitpack.io/#dennismozart1994/HeapK) )
 
 ##### Usage example
 
@@ -124,14 +124,14 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.github.dennismozart1994.HeapK:shared:<version>")
+                implementation("com.github.dennismozart1994.HeapK:shared:0.0.2")
             }
         }
     }
 }
 ```
 
-> Replace `<version>` with the desired version. (latest recommended: [![](https://jitpack.io/v/dennismozart1994/HeapK.svg)](https://jitpack.io/#dennismozart1994/HeapK) )
+> Replace `0.0.2` with the desired version. (latest recommended: [![](https://jitpack.io/v/dennismozart1994/HeapK.svg)](https://jitpack.io/#dennismozart1994/HeapK) )
 
 ---
 
