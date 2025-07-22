@@ -66,6 +66,16 @@ if let swiftDictionary = nsDictionary as? [AnyHashable: Any] {
 ```
 
 #### Gradle (Android)
+Add it in your settings.gradle.kts at the end of repositories:
+```kotlin
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+```
 
 Add the Heap dependency to your `build.gradle.kts`:
 
