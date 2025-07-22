@@ -127,7 +127,7 @@ kotlin {
 
 ## 💻 Build and Test Commands (locally)
 
-Getting your project up and running is simple! Here are the commands you need to build and test your
+Getting HeapK project locally up and running is simple! After a successful repo, here are some commands you can use to build and test your
 repository:
 
 1. **Build the Project:**
@@ -135,8 +135,8 @@ repository:
    To build your project, run the following command in the terminal:
 
    ```bash
-   ./gradlew :shared:assemble // Kotlin targets
-   ./gradlew :shared:assembleHeapKReleaseXCFramework // iOS targets
+   ./gradlew :shared:assemble // Android target
+   ./gradlew :shared:assembleHeapKReleaseXCFramework // iOS target
    xcodebuild build -scheme HeapK -configuration "Debug" -destination generic/platform=iOS -verbose SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES 
    ```
 
