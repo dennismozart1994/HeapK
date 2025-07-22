@@ -104,7 +104,12 @@ jobs:
       - name: Build iOS SPM
         run: |
           git pull origin HEAD:main
-          cp Package.local.swift Package.swift
+
+          # Prepare Package.swift for build
+          echo "${{ secrets.PACKAGE_TEMPLATE_DEVELOPMENT }}" \
+            | base64 --decode > Package.swift
+
+          # Build the XCFramework
           ./gradlew :shared:assembleHeapKReleaseXCFramework
           xcodebuild build -scheme HeapK -configuration "Debug" -destination generic/platform=iOS -verbose SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
@@ -161,10 +166,17 @@ jobs:
       - name: Apply version to files
         run: |
           version=${{ needs.calculate_new_version.outputs.new_version }}
+          checksum=${{ needs.build_ios.outputs.checksum }}
+
+          # Update version in gradle/libs.versions.toml
           sed -i'' "s/library-version = \".*\"/library-version = \"$version\"/" gradle/libs.versions.toml
-          cp Package.release.swift Package.swift
-          sed -i'' -E "s|url: \".*\"|url: \"https://github.com/dennismozart1994/HeapK/releases/download/$version/HeapK.xcframework.zip\"|" Package.swift
-          sed -i'' -E "s|checksum: \".*\"|checksum: \"${{ needs.build_ios.outputs.checksum }}\"|" Package.swift
+
+          # Update version in Package.swift
+          # Prepare Package.swift for build
+          echo "${{ secrets.PACKAGE_TEMPLATE_RELEASE }}" \
+            | base64 --decode \
+            | sed "s/__VERSION__/$version/" \
+            | sed "s/__CHECKSUM__/$checksum/" > Package.swift
 
       - name: Download Android artifacts
         uses: actions/download-artifact@v4
