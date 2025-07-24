@@ -162,12 +162,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-         
-      - name: Fetch latest GitHub release tag
-        id: get_version
-        run: |
-          version=$(curl -s https://api.github.com/repos/dennismozart1994/HeapK/releases/latest | jq -r '.tag_name')
-          echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Apply version to files
         run: |
@@ -239,7 +233,7 @@ jobs:
           set -e
 
           # Get latest tag, or leave empty if none
-          last_tag=${{ steps.get_version.outputs.version }}
+          last_tag=$(git tag --sort=-creatordate | head -n 1)
 
           if [ -z "$last_tag" ]; then
             echo "No previous tag found. Generating full changelog."
