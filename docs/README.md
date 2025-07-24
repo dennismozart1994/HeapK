@@ -85,8 +85,6 @@ dependencies {
 }
 ```
 
-> Replace `0.0.4` with the desired version. (latest recommended: [![](https://jitpack.io/v/dennismozart1994/HeapK.svg)](https://jitpack.io/#dennismozart1994/HeapK) )
-
 ##### Usage example
 
 ```kotlin
@@ -117,6 +115,17 @@ heapK.track("test_kmp", "test_message" to "Hey I'm a KMP log on Android") // tra
 
 #### Gradle (Kotlin Multiplatform)
 
+Add it in your settings.gradle.kts at the end of repositories:
+```kotlin
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+```
+
 Add the Heap dependency to your `build.gradle.kts`:
 
 ```kotlin
@@ -131,13 +140,11 @@ kotlin {
 }
 ```
 
-> Replace `0.0.4` with the desired version. (latest recommended: [![](https://jitpack.io/v/dennismozart1994/HeapK.svg)](https://jitpack.io/#dennismozart1994/HeapK) )
-
 ---
 
 ## 💻 Build and Test Commands (locally)
 
-Getting HeapK project locally up and running is simple! After a successful repo, here are some commands you can use to build and test your
+Getting HeapK project locally up and running is simple! After a successful repository clone/fork, here are some commands you can use to build and test your
 repository:
 
 1. **Build the Project:**
@@ -155,7 +162,7 @@ repository:
    To execute all the tests, use:
 
    ```bash
-   ./gradlew allTests
+   ./gradlew check
    ```
 
    Or if desired, here's how to run tests for each platform.
