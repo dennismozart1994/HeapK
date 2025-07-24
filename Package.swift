@@ -1,3 +1,4 @@
+@ -1,25 +0,0 @@
 // swift-tools-version:5.3
 import PackageDescription
 
@@ -17,7 +18,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: packageName,
-            path: "./shared/build/XCFrameworks/release/\(packageName).xcframework"
+            url: "https://github.com/dennismozart1994/HeapK/releases/download/0.0.4/HeapK.xcframework.zip",
+            checksum: "aa5f88055f7934bed4ee46a7b9a57cb14adbd61865b4c626da7488a5c7b59e7b"
         )
         ,
     ]
