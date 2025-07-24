@@ -19,7 +19,7 @@ let package = Package(
         .binaryTarget(
             name: packageName,
             url: "https://github.com/dennismozart1994/HeapK/releases/download/0.0.4/HeapK.xcframework.zip",
-            checksum: "aa5f88055f7934bed4ee46a7b9a57cb14adbd61865b4c626da7488a5c7b59e7b"
+            checksum: "1a75e315c17cfad4c6df4401f629540a1e6cd0417b7dc6768cf1e2e2f92da742"
         )
         ,
     ]
