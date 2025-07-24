@@ -17,8 +17,7 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: packageName,
-            url: "https://github.com/dennismozart1994/HeapK/releases/download/0.0.1/HeapK.xcframework.zip",
-            checksum: "REPLACEME"
+            path: "./shared/build/XCFrameworks/release/\(packageName).xcframework"
         )
         ,
     ]
