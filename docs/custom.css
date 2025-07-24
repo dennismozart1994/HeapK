@@ -1,0 +1,32 @@
+/* Dark mode table improvements */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: 1.5em;
+  background-color: #1e1e2f; /* dark background for table */
+  color: #ddd; /* light text */
+  border: 1px solid #444;
+}
+
+table th,
+table td {
+  border: 1px solid #444;
+  padding: 0.5em 1em;
+  text-align: left;
+}
+
+table thead th {
+  background-color: #2c2c44;
+  color: #fff;
+  font-weight: 600;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #2a2a40;
+}
+
+table tbody tr:hover {
+  background-color: #3a3a6a;
+}

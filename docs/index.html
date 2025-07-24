@@ -6,17 +6,91 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/dark.css" />
+  <!-- PrismJS Theme (okaidia = clearer contrast between languages) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css" />
+
+  <!-- Custom table + code styling -->
+  <style>
+    /* Make table header background and text same as body */
+    table tr:nth-child(even),
+    table tr:nth-child(odd) {
+      background-color: transparent !important;
+      color: inherit !important;
+    }
+
+    table tr td code {
+      color: inherit !important;
+      background: none !important;
+      font-family: monospace;
+      font-weight: normal !important;
+    }
+
+    .github-corner:hover .octo-arm {
+      animation: octocat-wave 560ms ease-in-out;
+    }
+
+    @keyframes octocat-wave {
+      0%, 100% { transform: rotate(0); }
+      20%, 60% { transform: rotate(-25deg); }
+      40%, 80% { transform: rotate(10deg); }
+    }
+
+    @media (max-width: 500px) {
+      .github-corner:hover .octo-arm {
+        animation: none;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- GitHub corner badge -->
+  <a href="https://github.com/dennismozart1994/HeapK" class="github-corner" aria-label="View source on GitHub" target="_blank">
+    <svg width="80" height="80" viewBox="0 0 250 250"
+      style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;"
+      aria-hidden="true">
+      <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+      <path class="octo-arm" style="transform-origin: 130px 106px;"
+        d="M128 109c-15-10-25-24-28-41-1-5-1-9-1-12
+          0-14 6-24 17-31 6-4 13-6 20-6 12 0 24 5 34 15
+          4 4 8 9 10 14 3 5 5 10 6 16 0 2 0 4 0 6 0 5-1 9-2 13
+          -1 4-3 7-5 10-2 3-5 5-9 6-4 1-9 0-14-3l-3-3z"
+        fill="currentColor"></path>
+      <path class="octo-body" d="M115 115c-15-10-25-24-28-41-1-5-1-9-1-12
+          0-14 6-24 17-31 6-4 13-6 20-6 12 0 24 5 34 15
+          4 4 8 9 10 14 3 5 5 10 6 16 0 2 0 4 0 6 0 5-1 9-2 13
+          -1 4-3 7-5 10-2 3-5 5-9 6-4 1-9 0-14-3l-3-3z"
+        fill="currentColor"></path>
+    </svg>
+  </a>
   <div id="app"></div>
   <script>
     window.$docsify = {
-      name: '',
-      repo: ''
-    }
+      name: 'HeapK',
+      repo: 'dennismozart1994/HeapK',
+      markdown: {
+        smartypants: true
+      },
+      plugins: [
+        function (hook) {
+          hook.doneEach(function () {
+            Prism.highlightAll();
+          });
+        }
+      ]
+    };
   </script>
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <!-- PrismJS + language components -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-clike.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-kotlin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-swift.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="//unpkg.com/prismjs/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script>
+    Prism.plugins.autoloader.languages_path = 'https://unpkg.com/prismjs/components/';
+  </script>
 </body>
 </html>
