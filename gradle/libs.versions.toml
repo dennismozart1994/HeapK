@@ -2,7 +2,6 @@
 agp = "8.11.1"
 androidx-test-core = "1.6.1"
 compose-multiplatform = "1.8.2"
-dokka = "2.0.0"
 heap-android-core = "0.8.1"
 heap-android-autocapture-view = "0.8.3"
 junit = "4.13.2"
@@ -43,7 +42,6 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 heap-android = { id = "io.heap.gradle", version.ref = "heap-android-plugin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

@@ -11,7 +11,7 @@ internal expect fun addHeapUserProperties(userProperties: Map<String, String?>)
 internal expect fun trackHeap(action: String, vararg data:Pair<String, String>)
 
 @OptIn(InternalCoroutinesApi::class)
-class HeapK {
+internal class HeapK {
     internal var isInit = false
     internal var context = AppContext
     private val lock = SynchronizedObject()
