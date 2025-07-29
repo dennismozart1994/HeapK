@@ -62,14 +62,14 @@ jobs:
         run: |
           git pull origin HEAD:main
           ./gradlew :shared:assemble
+          ./gradlew :shared:publishToMavenLocal
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: android-artifacts
+          name: shared/build
           path: |
-            shared/build/outputs/
-            shared/build/libs/
+            shared/build/
   
   build_ios:
     needs: [calculate_new_version]
@@ -170,25 +170,21 @@ jobs:
           # Update version in docs/README.md
           sed -i -E "s/\b[0-9]+\.[0-9]+\.[0-9]+\b/$version/g" docs/README.md
 
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: shared/build
+
       - name: Download iOS artifact
         uses: actions/download-artifact@v4
         with:
           name: ios-artifact
           path: release-artifacts
-      
-      - name: Download Android artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: android-artifacts
-          path: release-artifacts
 
-      - name: Validate artifact presence
+      - name: Validate SPM artifact presence
         run: |
           for f in \
-            HeapK.xcframework.zip \
-            aar/shared-release.aar \
-            shared-android-${{ needs.calculate_new_version.outputs.new_version }}-sources.jar \
-            shared-kotlin-${{ needs.calculate_new_version.outputs.new_version }}-sources.jar; do
+            HeapK.xcframework.zip; do
             [ -f "release-artifacts/$f" ] || { echo "❌ Missing: $f"; exit 1; }
           done
       
