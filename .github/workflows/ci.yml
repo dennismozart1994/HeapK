@@ -67,7 +67,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: shared/build
+          name: shared
           path: |
             shared/build/
   
@@ -173,7 +173,8 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: shared/build
+          name: shared
+          path: shared/build
 
       - name: Download iOS artifact
         uses: actions/download-artifact@v4
