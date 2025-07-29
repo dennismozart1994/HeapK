@@ -186,9 +186,9 @@ jobs:
         run: |
           for f in \
             HeapK.xcframework.zip \
-            shared/build/outputs/aar/shared-release.aar \
-            shared/build/libs/shared-android-${{ needs.calculate_new_version.outputs.new_version }}-sources.jar \
-            shared/build/libs/shared-kotlin-${{ needs.calculate_new_version.outputs.new_version }}-sources.jar; do
+            aar/shared-release.aar \
+            shared-android-${{ needs.calculate_new_version.outputs.new_version }}-sources.jar \
+            shared-kotlin-${{ needs.calculate_new_version.outputs.new_version }}-sources.jar; do
             [ -f "release-artifacts/$f" ] || { echo "❌ Missing: $f"; exit 1; }
           done
       
@@ -257,6 +257,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git pull origin HEAD:main
-          ./gradlew :shared:assemble
           ./gradlew publishAndroidReleasePublicationToGithubPackagesRepository
           ./gradlew publishKotlinMultiplatformPublicationToGithubPackagesRepository

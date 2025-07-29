@@ -1,0 +1,9 @@
+jdk:
+  - openjdk17
+
+android:
+  disableAutomaticBuild: true
+
+install:
+  - ./gradlew :shared:assemble
+  - ./gradlew :shared:publishToMavenLocal
