@@ -50,16 +50,6 @@ android {
     }
 }
 
-configurations {
-    create("android_aar")
-}
-
-val aarFile = layout.buildDirectory.file("outputs/aar/shared-release.aar")
-val aarArtifact = artifacts.add("android_aar", aarFile.get().asFile) {
-    type = "aar"
-    builtBy("assembleRelease")
-}
-
 kmmbridge {
     spm()
 }
@@ -147,12 +137,15 @@ kotlin {
 
 
 publishing {
-    publications { }
-    publications.withType<MavenPublication>().getByName("kotlinMultiplatform") {
-        groupId = libs.versions.library.group.get()
-        artifactId = "shared"
-        version = libs.versions.library.version.get()
-        artifact(aarArtifact)
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/dennismozart1994/HeapK")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }
 
