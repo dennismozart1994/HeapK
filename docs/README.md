@@ -81,7 +81,7 @@ Add the Heap dependency to your `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.dennismozart1994.HeapK:shared-android:0.1.1")
+    implementation("com.github.dennismozart1994.HeapK:shared-android:0.1.0")
 }
 ```
 
@@ -133,7 +133,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.github.dennismozart1994.HeapK:shared:0.1.1")
+                implementation("com.github.dennismozart1994.HeapK:shared:0.1.0")
             }
         }
     }
