@@ -58,13 +58,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build Android & KMP & Publish to GitHub Packages
+      - name: Build Android & KMP
         run: |
           git pull origin HEAD:main
           ./gradlew :shared:assemble
-          ./gradlew publishToMavenLocal
-          ./gradlew publishAndroidReleasePublicationToGithubPackagesRepository
-          ./gradlew publishKotlinMultiplatformPublicationToGithubPackagesRepository
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-artifacts
+          path: |
+            shared/build/outputs/
+            shared/build/libs/
   
   build_ios:
     needs: [calculate_new_version]
@@ -165,24 +170,25 @@ jobs:
           # Update version in docs/README.md
           sed -i -E "s/\b[0-9]+\.[0-9]+\.[0-9]+\b/$version/g" docs/README.md
 
-      - name: Download Android artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: release-artifacts
-
       - name: Download iOS artifact
         uses: actions/download-artifact@v4
         with:
           name: ios-artifact
           path: release-artifacts
-
-      - name: List downloaded artifacts
-        run: find release-artifacts
+      
+      - name: Download Android artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-artifacts
+          path: release-artifacts
 
       - name: Validate artifact presence
         run: |
           for f in \
             HeapK.xcframework.zip \
+            shared/build/outputs/aar/shared-release.aar \
+            shared/build/libs/shared-android-${{ needs.calculate_new_version.outputs.new_version }}-sources.jar \
+            shared/build/libs/shared-kotlin-${{ needs.calculate_new_version.outputs.new_version }}-sources.jar; do
             [ -f "release-artifacts/$f" ] || { echo "❌ Missing: $f"; exit 1; }
           done
       
@@ -244,3 +250,13 @@ jobs:
             CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts to Github Packages
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git pull origin HEAD:main
+          ./gradlew :shared:assemble
+          ./gradlew publishAndroidReleasePublicationToGithubPackagesRepository
+          ./gradlew publishKotlinMultiplatformPublicationToGithubPackagesRepository
