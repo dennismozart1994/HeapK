@@ -58,29 +58,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build Android & KMP
+      - name: Build Android & KMP & Publish to GitHub Packages
         run: |
           git pull origin HEAD:main
           ./gradlew :shared:assemble
           ./gradlew publishToMavenLocal
-
-      - name: Zip Android .aar artifact from m2 repository
-        run: |
-          AAR_PATH=$(find ~/.m2/repository -name "shared-android*.aar" | tail -n 1)
-          zip -j shared/build/libs/HeapK-android.aar.zip "$AAR_PATH"
-
-      - name: Zip KMP .aar artifact from m2 repository
-        run: |
-          KMP_AAR_PATH=$(find ~/.m2/repository -name "shared*.aar" | grep -v shared-android | tail -n 1)
-          zip -j shared/build/libs/HeapK-kmp.aar.zip "$KMP_AAR_PATH"
-
-      - name: Upload Android artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-artifacts
-          path: |
-            shared/build/libs/HeapK-android.aar.zip
-            shared/build/libs/HeapK-kmp.aar.zip
+          ./gradlew publishAndroidReleasePublicationToGithubPackagesRepository
+          ./gradlew publishKotlinMultiplatformPublicationToGithubPackagesRepository
   
   build_ios:
     needs: [calculate_new_version]
@@ -184,7 +168,6 @@ jobs:
       - name: Download Android artifacts
         uses: actions/download-artifact@v4
         with:
-          name: android-artifacts
           path: release-artifacts
 
       - name: Download iOS artifact
@@ -200,8 +183,6 @@ jobs:
         run: |
           for f in \
             HeapK.xcframework.zip \
-            HeapK-android.aar.zip \
-            HeapK-kmp.aar.zip; do
             [ -f "release-artifacts/$f" ] || { echo "❌ Missing: $f"; exit 1; }
           done
       
@@ -260,8 +241,6 @@ jobs:
           body: ${{ steps.changelog.outputs.changelog }}
           files: |
             release-artifacts/HeapK.xcframework.zip
-            release-artifacts/HeapK-android.aar.zip
-            release-artifacts/HeapK-kmp.aar.zip
             CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
