@@ -81,16 +81,16 @@ Add the Heap dependency to your `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.dennismozart1994.HeapK:shared-android:0.1.0")
+    implementation("com.github.dennismozart1994.HeapK:shared-android:0.0.4")
 }
 ```
 
 ##### Usage example
 
 ```kotlin
-import com.denniverse.heapk.AppContext
-import com.denniverse.heapk.HeapKAnalytics
-import com.denniverse.heapk.HeapKConfig
+import com.mozartlabs.heapk.AppContext
+import com.mozartlabs.heapk.HeapKAnalytics
+import com.mozartlabs.heapk.HeapKConfig
 
 // on Android the Context is REQUIRED to initialize Heap
 val heapKContext = AppContext
@@ -133,7 +133,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.github.dennismozart1994.HeapK:shared:0.1.0")
+                implementation("com.github.dennismozart1994.HeapK:shared:0.0.4")
             }
         }
     }

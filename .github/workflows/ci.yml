@@ -265,8 +265,3 @@ jobs:
             CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
- 
-      - name: Trigger JitPack build
-        run: |
-          curl -X POST "https://jitpack.io/api/builds" \
-            -d "repo=github.com/dennismozart1994/HeapK&tag=${{ steps.release_tag.outputs.new_version }}"
