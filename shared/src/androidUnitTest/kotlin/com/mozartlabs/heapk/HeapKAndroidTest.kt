@@ -23,18 +23,16 @@ class HeapKAndroidTest {
     fun `Test Heap can be initialized` () {
         val heap = HeapK()
         assertFalse(heap.isInit)
-        val context = AppContext
-        context.set(ApplicationProvider.getApplicationContext())
-        heap.setContext(context)
+        AppContext.set(ApplicationProvider.getApplicationContext())
+        heap.setContext(AppContext)
         heap.initialize(config)
         assertTrue(heap.isInit)
         assertNotNull(heap.context.get())
     }
-}
 
-class HeapKAndroidExceptionTest {
     @Test(expected = IllegalArgumentException::class)
     fun `Test Heap initialization exception if context not provided on Android`() {
+        AppContext.set(null)
         val config = HeapKConfig(
             projectId = "123456789",
             shouldDisableTextCapture = true,
