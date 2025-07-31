@@ -48,4 +48,14 @@ class HeapKAndroidAnalyticsTest {
         verify(VerifyMode.exactly(1)) { analytics.heap.track("test") }
         verify(VerifyMode.exactly(1)) { analytics.heap.track("testWithParams", params) }
     }
+
+    @Test
+    fun `Track does only calls Heap after initialization`() {
+        analytics.track("test")
+        verify(VerifyMode.exactly(0)) { analytics.heap.track("test") }
+
+        analytics.setContext(context)
+        analytics.initialize(config = config)
+        verify(VerifyMode.exactly(1)) { analytics.heap.initialize(config = config) }
+    }
 }

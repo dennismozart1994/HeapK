@@ -45,4 +45,14 @@ class HeapKIOSAnalyticsTest {
         analytics.track("test", withProperties)
         verify { analytics.heap.track("test", *withProperties.toVarargPairs()) }
     }
+
+    @Test
+    fun `Track does only calls Heap after initialization`() {
+        analytics.track("test")
+        verify(VerifyMode.exactly(0)) { analytics.heap.track("test") }
+
+        analytics.initialize(config = config)
+        analytics.track("test")
+        verify(VerifyMode.exactly(1)) { analytics.heap.track("test") }
+    }
 }
