@@ -254,5 +254,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git pull origin HEAD:main
-          ./gradlew publishAndroidReleasePublicationToGithubPackagesRepository
-          ./gradlew publishKotlinMultiplatformPublicationToGithubPackagesRepository
+          ./gradlew publishAllPublicationsToGitHubPackagesRepository --no-configuration-cache
